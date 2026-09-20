@@ -1,0 +1,13 @@
+# Landing Page (deployed via drag-and-drop, not in repo)
+Landing/
+Landing.zip
+
+# Environment & Build
+node_modules/
+dist/
+release/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
