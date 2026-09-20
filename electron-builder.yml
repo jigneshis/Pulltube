@@ -1,0 +1,36 @@
+appId: com.pulltube.app
+productName: PullTube
+copyright: Copyright © 2024 PullTube
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - dist/**/*
+
+extraResources:
+  - from: resources/bin/
+    to: bin
+    filter:
+      - "**/*"
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.ico
+  publisherName: PullTube
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: PullTube
+  perMachine: false
+  deleteAppDataOnUninstall: false
