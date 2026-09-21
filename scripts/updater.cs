@@ -101,7 +101,7 @@ namespace PullTubeUpdater
                 UpdateStatus("Connecting to GitHub Releases...");
 
                 string currentVersion = GetCurrentVersion();
-                string apiUrl = "https://api.github.com/repos/jigneshls/Pulltube/releases/latest";
+                string apiUrl = "https://api.github.com/repos/jigneshis/Pulltube/releases/latest";
 
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(apiUrl);
                 request.UserAgent = "PullTube-Updater";
@@ -123,8 +123,22 @@ namespace PullTubeUpdater
                 }
                 latestTag = tagMatch.Groups[1].Value.TrimStart('v', 'V');
 
-                // Extract browser_download_url for .exe
-                Match urlMatch = Regex.Match(jsonResponse, "\"browser_download_url\"\\s*:\\s*\"([^\"]+\\.exe)\"");
+                // Extract browser_download_url for Setup installer (excluding updater.exe itself)
+                Match urlMatch = Regex.Match(jsonResponse, "\"browser_download_url\"\\s*:\\s*\"([^\"]*Setup[^\"]*\\.exe)\"", RegexOptions.IgnoreCase);
+                if (!urlMatch.Success)
+                {
+                    MatchCollection matches = Regex.Matches(jsonResponse, "\"browser_download_url\"\\s*:\\s*\"([^\"]+\\.exe)\"", RegexOptions.IgnoreCase);
+                    foreach (Match m in matches)
+                    {
+                        string candidate = m.Groups[1].Value;
+                        if (!candidate.EndsWith("updater.exe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            urlMatch = m;
+                            break;
+                        }
+                    }
+                }
+
                 if (!urlMatch.Success)
                 {
                     ShowError("No Windows installer (.exe) found in the latest release.");

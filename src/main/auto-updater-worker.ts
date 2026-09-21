@@ -40,7 +40,9 @@ export class AutoUpdaterWorker {
       const hasUpdate = this.isNewer(latestTag, currentVersion);
       let downloadUrl = '';
       if (Array.isArray(release.assets)) {
-        const exeAsset = release.assets.find((a: any) => a.name?.endsWith('.exe'));
+        const exeAsset = release.assets.find(
+          (a: any) => a.name?.endsWith('.exe') && !a.name.toLowerCase().includes('updater')
+        );
         if (exeAsset) {
           downloadUrl = exeAsset.browser_download_url;
         }
@@ -77,7 +79,7 @@ export class AutoUpdaterWorker {
     return new Promise((resolve, reject) => {
       const options = {
         hostname: 'api.github.com',
-        path: '/repos/jigneshls/Pulltube/releases/latest',
+        path: '/repos/jigneshis/Pulltube/releases/latest',
         headers: {
           'User-Agent': 'PullTube-App',
           Accept: 'application/vnd.github.v3+json',
