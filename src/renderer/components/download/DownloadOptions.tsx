@@ -9,6 +9,7 @@ import {
   Bookmark,
   Scissors,
   Clock,
+  SunMedium,
 } from 'lucide-react';
 import { Toggle } from '../ui/Toggle';
 import { DownloadOptions as IDownloadOptions } from '../../../shared/types';
@@ -79,6 +80,57 @@ export const DownloadOptions: React.FC<DownloadOptionsProps> = ({ options, onCha
             className="overflow-hidden"
           >
             <div className="p-4 pt-1 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Option: Color Dynamic Range (SDR / HDR) */}
+              {options.mode !== 'audio' && (
+                <div className="flex items-center justify-between p-3.5 rounded-xl border border-white/5 bg-white/[0.02] sm:col-span-2 select-none">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
+                      <SunMedium className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-white/90 flex items-center gap-2">
+                        <span>Color Dynamic Range</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-bold uppercase tracking-wider">
+                          {options.colorRange === 'hdr' ? 'HDR' : 'SDR'}
+                        </span>
+                      </div>
+                      <div className="text-xs text-white/40">
+                        {options.colorRange === 'hdr'
+                          ? 'High Dynamic Range (vibrant 10-bit color, HDR10/HLG)'
+                          : 'Standard Dynamic Range (maximum compatibility, recommended)'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center p-1 bg-black/40 rounded-xl border border-white/10 text-xs shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => updateOption('colorRange', 'sdr')}
+                      className={cn(
+                        "px-3 py-1 rounded-lg font-semibold transition-all",
+                        (!options.colorRange || options.colorRange === 'sdr')
+                          ? "bg-violet-600 text-white shadow-sm"
+                          : "text-white/50 hover:text-white"
+                      )}
+                    >
+                      SDR
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateOption('colorRange', 'hdr')}
+                      className={cn(
+                        "px-3 py-1 rounded-lg font-semibold transition-all",
+                        options.colorRange === 'hdr'
+                          ? "bg-violet-600 text-white shadow-sm"
+                          : "text-white/50 hover:text-white"
+                      )}
+                    >
+                      HDR
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Option 1: Embed Subtitles */}
               <div
                 onClick={() => updateOption('embedSubtitles', !options.embedSubtitles)}

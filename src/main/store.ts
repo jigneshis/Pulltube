@@ -17,6 +17,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   defaultFormat: 'best',
   defaultQuality: '1080p',
   defaultMode: 'video',
+  defaultColorRange: 'sdr',
 };
 
 interface StoreSchema {

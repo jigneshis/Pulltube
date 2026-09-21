@@ -25,6 +25,7 @@ const defaultSettings: AppSettings = {
   defaultFormat: 'best',
   defaultQuality: 'best',
   defaultMode: 'video',
+  defaultColorRange: 'sdr',
   minimizeToTray: false,
   closeToTray: false
 };

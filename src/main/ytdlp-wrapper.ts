@@ -325,9 +325,13 @@ export class YtDlpWrapper {
 
       const container = (options.outputFormat || 'mp4').toLowerCase();
 
-      // Prioritize resolution first (so 4K/8K downloads true 4K/8K).
-      // Allow HDR (hdr:12) since 8K and high-end 4K are HDR on YouTube, and use H.264/M4A as tiebreaker for 1080p and below.
-      args.push('-S', 'res,quality,fps,hdr:12,vcodec:h264,acodec:m4a');
+      // Color range preference: SDR by default, with smart fallback to HDR so resolution is never downgraded
+      const colorRange = options.colorRange || 'sdr';
+      if (colorRange === 'hdr') {
+        args.push('-S', 'res,hdr:12,quality,fps,vcodec:h264,acodec:m4a');
+      } else {
+        args.push('-S', 'res,hdr:sdr,quality,fps,vcodec:h264,acodec:m4a');
+      }
 
       if (validVideoContainers.includes(container)) {
         args.push('--merge-output-format', container);

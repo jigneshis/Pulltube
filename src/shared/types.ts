@@ -113,6 +113,7 @@ export interface DownloadOptions {
   proxyUrl?: string;
   overwrite?: boolean;
   renameIfConflict?: boolean;
+  colorRange?: 'sdr' | 'hdr';
 }
 
 /** Possible states of a download task */
@@ -178,6 +179,7 @@ export interface AppSettings {
   defaultFormat: string;
   defaultQuality: string;
   defaultMode: 'video' | 'audio';
+  defaultColorRange: 'sdr' | 'hdr';
 }
 
 // ─── Version Info ───────────────────────────────────────────────────────────

@@ -58,6 +58,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   defaultFormat: 'mp4',
   defaultQuality: 'best',
   defaultMode: 'video',
+  defaultColorRange: 'sdr',
 };
 
 // ─── Video Formats ──────────────────────────────────────────────────────────

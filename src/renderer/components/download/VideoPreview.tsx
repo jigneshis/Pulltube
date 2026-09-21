@@ -25,6 +25,14 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ info }) => {
     return new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(views) + ' views';
   };
 
+  const isHdrAvailable = Array.isArray(info.formats) && info.formats.some((f: any) =>
+    (f.formatNote && f.formatNote.toLowerCase().includes('hdr')) ||
+    (f.vcodec && (f.vcodec.includes('vp09.02') || f.vcodec.includes('av01.0.1'))) ||
+    f.dynamic_range === 'HDR' ||
+    f.dynamic_range === 'HDR10' ||
+    f.dynamic_range === 'HLG'
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -38,6 +46,11 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({ info }) => {
             alt={info.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
+          {isHdrAvailable && (
+            <div className="absolute top-2 left-2 px-2 py-0.5 bg-amber-500/90 backdrop-blur-md rounded-md text-[10px] font-black text-black tracking-wider uppercase shadow-md shadow-amber-500/20">
+              HDR
+            </div>
+          )}
           {info.duration && (
             <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/80 backdrop-blur-md rounded-lg text-xs font-medium text-white flex items-center gap-1">
               <Clock className="w-3 h-3" />

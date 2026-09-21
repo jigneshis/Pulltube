@@ -15,6 +15,7 @@ import { Button } from '../components/ui/Button';
 import { useToast } from '../components/ui/Toast';
 import { Download } from 'lucide-react';
 import { SupportedPlatforms } from '../components/download/SupportedPlatforms';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -84,6 +85,7 @@ export default function HomePage() {
         targetUrl.includes('bandcamp.com');
       const defaultMode = isAudioByDefault ? 'audio' : 'video';
       const defaultFormat = isAudioByDefault ? 'mp3' : 'mp4';
+      const defaultColor = useSettingsStore.getState().defaultColorRange || 'sdr';
       setOptions((prev) => ({
         ...prev,
         url: info.url || targetUrl,
@@ -91,6 +93,7 @@ export default function HomePage() {
         outputFormat: defaultFormat,
         extractAudio: isAudioByDefault,
         audioFormat: isAudioByDefault ? 'mp3' : undefined,
+        colorRange: defaultColor,
       }));
     } catch (err: any) {
       console.error('Fetch video error:', err);

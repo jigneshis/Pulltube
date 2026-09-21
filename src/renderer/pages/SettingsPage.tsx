@@ -114,6 +114,41 @@ export default function SettingsPage() {
               />
             </div>
 
+            <div className="flex items-center justify-between pt-2 border-t border-white/5">
+              <div>
+                <div className="text-sm font-medium text-white/90">Default Color Dynamic Range</div>
+                <div className="text-xs text-white/50">
+                  {settings.defaultColorRange === 'hdr'
+                    ? 'HDR selected: Prioritizes 10-bit color, with smart SDR fallback.'
+                    : 'SDR selected: Universal player compatibility (smartly falls back to HDR if only HDR exists).'}
+                </div>
+              </div>
+              <div className="flex items-center p-1 bg-white/5 rounded-xl border border-white/10 text-xs">
+                <button
+                  type="button"
+                  onClick={() => settings.updateSetting('defaultColorRange', 'sdr')}
+                  className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                    (!settings.defaultColorRange || settings.defaultColorRange === 'sdr')
+                      ? 'bg-violet-600 text-white shadow-md'
+                      : 'text-white/50 hover:text-white'
+                  }`}
+                >
+                  SDR (Default)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => settings.updateSetting('defaultColorRange', 'hdr')}
+                  className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                    settings.defaultColorRange === 'hdr'
+                      ? 'bg-violet-600 text-white shadow-md'
+                      : 'text-white/50 hover:text-white'
+                  }`}
+                >
+                  HDR
+                </button>
+              </div>
+            </div>
+
             <Toggle 
               label="Start with Windows" 
               checked={settings.startWithWindows} 
