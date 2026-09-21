@@ -62,7 +62,12 @@ export class YtDlpWrapper {
 
   private static async fetchRawVideoInfo(target: string): Promise<VideoInfo> {
     return new Promise((resolve, reject) => {
-      const ytdlp = spawn(getYtdlpPath(), ['--no-warnings', '--js-runtimes', 'node', '--dump-json', target]);
+      const ytdlp = spawn(getYtdlpPath(), [
+        '--no-warnings',
+        '--js-runtimes', 'node',
+        '--dump-json',
+        target
+      ]);
       
       let stdout = '';
       let stderr = '';
@@ -154,7 +159,13 @@ export class YtDlpWrapper {
     }
 
     return new Promise((resolve, reject) => {
-      const ytdlp = spawn(getYtdlpPath(), ['--no-warnings', '--js-runtimes', 'node', '--flat-playlist', '--dump-single-json', url]);
+      const ytdlp = spawn(getYtdlpPath(), [
+        '--no-warnings',
+        '--js-runtimes', 'node',
+        '--flat-playlist',
+        '--dump-single-json',
+        url
+      ]);
       
       let stdout = '';
       let stderr = '';
@@ -247,7 +258,12 @@ export class YtDlpWrapper {
 
   static async getFormats(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      const ytdlp = spawn(getYtdlpPath(), ['-F', url]);
+      const ytdlp = spawn(getYtdlpPath(), [
+        '--no-warnings',
+        '--js-runtimes', 'node',
+        '-F',
+        url
+      ]);
       
       let stdout = '';
       let stderr = '';
@@ -279,8 +295,17 @@ export class YtDlpWrapper {
     
     // Output directory fallback
     const targetDir = options.outputDir || (app?.getPath ? app.getPath('downloads') : '');
-    const outputPath = path.join(targetDir, options.filenameTemplate || `%(title)s.%(ext)s`);
+    let filenamePattern = options.filenameTemplate || `%(title)s.%(ext)s`;
+    if (options.renameIfConflict) {
+      filenamePattern = `%(title)s (%(autonumber)d).%(ext)s`;
+      args.push('--autonumber-start', '1');
+    }
+    const outputPath = path.join(targetDir, filenamePattern);
     args.push('-o', outputPath);
+
+    if (options.overwrite) {
+      args.push('--force-overwrites');
+    }
 
     const validVideoContainers = ['mp4', 'mkv', 'webm', 'mov', 'avi'];
     const validAudioFormats = ['mp3', 'm4a', 'wav', 'flac', 'aac', 'ogg', 'opus'];
@@ -300,12 +325,9 @@ export class YtDlpWrapper {
 
       const container = (options.outputFormat || 'mp4').toLowerCase();
 
-      // For MP4, prioritize H.264 (AVC) video and AAC (M4A) audio for universal playback
-      // across all players (Windows Media Player, QuickTime, iOS, Android, TVs) instead of AV1/VP9
-      if (container === 'mp4') {
-        args.push('-S', 'vcodec:h264,lang,quality,res,fps,hdr:12,acodec:m4a');
-        args.push('--remux-video', 'mp4');
-      }
+      // Prioritize resolution first (so 4K/8K downloads true 4K/8K).
+      // Allow HDR (hdr:12) since 8K and high-end 4K are HDR on YouTube, and use H.264/M4A as tiebreaker for 1080p and below.
+      args.push('-S', 'res,quality,fps,hdr:12,vcodec:h264,acodec:m4a');
 
       if (validVideoContainers.includes(container)) {
         args.push('--merge-output-format', container);

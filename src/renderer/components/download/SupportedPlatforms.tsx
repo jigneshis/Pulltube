@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, ArrowRight, CheckCircle2, Sparkles, Copy, Play } from 'lucide-react';
-import { SupportedSitesModal } from './SupportedSitesModal';
+import React from 'react';
+import { motion } from 'framer-motion';
 
 interface SupportedPlatformsProps {
   onSelectUrl?: (url: string) => void;
@@ -19,9 +17,6 @@ interface Platform {
 }
 
 export const SupportedPlatforms: React.FC<SupportedPlatformsProps> = ({ onSelectUrl }) => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(null);
-
   const platforms: Platform[] = [
     {
       id: 'youtube',
@@ -204,135 +199,53 @@ export const SupportedPlatforms: React.FC<SupportedPlatformsProps> = ({ onSelect
   return (
     <div className="w-full flex flex-col gap-6 py-4">
       {/* Title & Badge */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-white tracking-wide uppercase">
-              Supported on 1,000+ Platforms
-            </h3>
-            <p className="text-xs text-white/50">
-              Paste any public link. Official extractors handle video, audio, and metadata.
-            </p>
-          </div>
+      <div className="flex items-center gap-2.5">
+        <div className="relative flex h-2.5 w-2.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
         </div>
-
-        <button
-          onClick={() => setModalOpen(true)}
-          className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-violet-600/20 border border-white/10 hover:border-violet-500/40 text-xs font-medium text-white/70 hover:text-violet-300 transition-all self-start sm:self-auto"
-        >
-          <Globe className="w-3.5 h-3.5 text-violet-400" />
-          <span>Browse All 1,000+ Sites</span>
-          <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-        </button>
+        <div>
+          <h3 className="text-sm font-semibold text-white tracking-wide uppercase">
+            Supported on 1,000+ Platforms
+          </h3>
+          <p className="text-xs text-white/50">
+            Paste any public link. Official extractors handle video, audio, and metadata.
+          </p>
+        </div>
       </div>
 
       {/* Brand Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-        {platforms.map((p) => {
-          const isSelected = selectedPlatform?.id === p.id;
-          return (
-            <motion.div
-              key={p.id}
-              whileHover={{ y: -3, scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setSelectedPlatform(isSelected ? null : p)}
-              className={`relative cursor-pointer p-3.5 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center group ${
-                isSelected 
-                  ? 'bg-white/10 border-violet-500/60 shadow-lg shadow-violet-500/20' 
-                  : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/5 hover:border-white/20'
-              }`}
-            >
-              {/* Ambient Glow */}
-              <div 
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-15 transition-opacity duration-300 blur-xl pointer-events-none"
-                style={{ backgroundColor: p.glowColor }}
-              />
-
-              {/* Logo */}
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-2.5 transition-transform group-hover:scale-110">
-                {p.svg}
-              </div>
-
-              {/* Name */}
-              <div className="flex items-center gap-1 font-semibold text-xs text-white group-hover:text-white transition-colors">
-                <span>{p.name}</span>
-              </div>
-
-              {/* Feature Pill */}
-              <span className="text-[10px] text-white/40 group-hover:text-white/70 mt-0.5 truncate max-w-full">
-                {p.badge || p.tagline}
-              </span>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* Selected Platform Quick-Action Banner */}
-      <AnimatePresence>
-        {selectedPlatform && (
+        {platforms.map((p) => (
           <motion.div
-            initial={{ opacity: 0, height: 0, y: -10 }}
-            animate={{ opacity: 1, height: 'auto', y: 0 }}
-            exit={{ opacity: 0, height: 0, y: -10 }}
-            className="overflow-hidden"
+            key={p.id}
+            whileHover={{ y: -3, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="relative p-3.5 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center group bg-white/[0.03] hover:bg-white/[0.08] border-white/5 hover:border-white/20 select-none"
           >
-            <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/15 backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-start sm:items-center gap-3">
-                <div 
-                  className="w-10 h-10 rounded-xl flex items-center justify-center p-2 flex-shrink-0"
-                  style={{ backgroundColor: `${selectedPlatform.glowColor}25`, border: `1px solid ${selectedPlatform.glowColor}40` }}
-                >
-                  {selectedPlatform.svg}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-white">{selectedPlatform.name}</h4>
-                    <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" />
-                      Verified
-                    </span>
-                  </div>
-                  <p className="text-xs text-white/60 mt-0.5 leading-relaxed">
-                    {selectedPlatform.features}
-                  </p>
-                </div>
-              </div>
+            {/* Ambient Glow */}
+            <div 
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-15 transition-opacity duration-300 blur-xl pointer-events-none"
+              style={{ backgroundColor: p.glowColor }}
+            />
 
-              <div className="flex items-center gap-2 self-end sm:self-auto flex-shrink-0">
-                {onSelectUrl && (
-                  <button
-                    onClick={() => {
-                      onSelectUrl(selectedPlatform.sampleUrl);
-                      setSelectedPlatform(null);
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold shadow-md shadow-violet-600/30 transition-all"
-                  >
-                    <Play className="w-3.5 h-3.5 fill-white" />
-                    <span>Try Sample</span>
-                  </button>
-                )}
-                <button
-                  onClick={() => setSelectedPlatform(null)}
-                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white text-xs font-medium transition-colors"
-                >
-                  Dismiss
-                </button>
-              </div>
+            {/* Logo */}
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-2.5 transition-transform group-hover:scale-110">
+              {p.svg}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Modal for 1,000+ sites */}
-      <SupportedSitesModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSelectSample={onSelectUrl}
-      />
+            {/* Name */}
+            <div className="flex items-center gap-1 font-semibold text-xs text-white group-hover:text-white transition-colors">
+              <span>{p.name}</span>
+            </div>
+
+            {/* Feature Pill */}
+            <span className="text-[10px] text-white/40 group-hover:text-white/70 mt-0.5 truncate max-w-full">
+              {p.badge || p.tagline}
+            </span>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 };

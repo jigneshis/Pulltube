@@ -32,6 +32,12 @@ export const IPC_CHANNELS = {
   OPEN_EXTERNAL: 'open-external',
   QUEUE_COMPLETE: 'queue-complete',
   NAVIGATE_TO: 'navigate-to',
+  LAUNCH_APP_UPDATER: 'launch-app-updater',
+  CHECK_FILE_EXISTS: 'check-file-exists',
+  GET_APP_VERSION_STATE: 'get-app-version-state',
+  ACKNOWLEDGE_VERSION: 'acknowledge-version',
+  CHECK_FOR_APP_UPDATES: 'check-for-app-updates',
+  APP_UPDATE_AVAILABLE: 'app-update-available',
 } as const;
 
 // ─── Default Settings ───────────────────────────────────────────────────────
@@ -57,7 +63,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
 // ─── Video Formats ──────────────────────────────────────────────────────────
 
 export const VIDEO_FORMATS = [
-  { value: 'mp4', label: 'MP4 (H.264 - Universal)', ext: 'mp4' },
+  { value: 'mp4', label: 'MP4 (Universal / Recommended)', ext: 'mp4' },
   { value: 'mp4-h265', label: 'MP4 (H.265/HEVC)', ext: 'mp4' },
   { value: 'webm', label: 'WebM (VP9)', ext: 'webm' },
   { value: 'mkv', label: 'MKV (Matroska)', ext: 'mkv' },
@@ -140,7 +146,7 @@ export const FILENAME_TOKENS = [
 // ─── App Constants ──────────────────────────────────────────────────────────
 
 export const APP_NAME = 'PullTube';
-export const APP_VERSION = '1.0.0';
+export const APP_VERSION = '1.0.1';
 export const YTDLP_RELEASES_URL = 'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest';
 export const YTDLP_BINARY_NAME = 'yt-dlp.exe';
 export const FFMPEG_BINARY_NAME = 'ffmpeg.exe';

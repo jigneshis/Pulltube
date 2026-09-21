@@ -28,7 +28,7 @@ export const FormatSelector: React.FC<FormatSelectorProps> = ({
   onQualitySelect
 }) => {
   const videoFormats = [
-    { label: 'MP4 (H.264 - Universal)', value: 'mp4' },
+    { label: 'MP4 (Universal / Recommended)', value: 'mp4' },
     { label: 'MKV (Matroska)', value: 'mkv' },
     { label: 'WebM (VP9)', value: 'webm' },
   ];
@@ -73,7 +73,7 @@ export const FormatSelector: React.FC<FormatSelectorProps> = ({
     const maxHeight = safeFormats.reduce((max, f) => Math.max(max, f.height || 0), 0);
     const filteredTiers = maxHeight > 0
       ? videoTiers.filter(t => t.height <= maxHeight)
-      : videoTiers.slice(3); // default 1080p downwards if height unknown
+      : videoTiers;
 
     qualityOptions = [
       { label: 'Best Available (Recommended)', value: 'best' },

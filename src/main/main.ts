@@ -4,6 +4,7 @@ import { setupIpcHandlers } from './ipc-handlers';
 import { setupTray } from './tray';
 import { downloadManager } from './download-manager';
 import { appStore } from './store';
+import { AutoUpdaterWorker } from './auto-updater-worker';
 
 app.commandLine.appendSwitch('allow-file-access-from-files');
 
@@ -86,6 +87,7 @@ if (!gotTheLock) {
     setupIpcHandlers(mainWindow);
     downloadManager.setMainWindow(mainWindow);
     setupTray(mainWindow);
+    AutoUpdaterWorker.init(mainWindow);
   };
 
   app.whenReady().then(() => {

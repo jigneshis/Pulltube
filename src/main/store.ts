@@ -22,6 +22,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
 interface StoreSchema {
   settings: AppSettings;
   history: DownloadHistory[];
+  lastSeenVersion?: string;
 }
 
 class AppStore {
@@ -43,6 +44,14 @@ class AppStore {
   saveSettings(settings: Partial<AppSettings>): void {
     const current = this.getSettings();
     this.store.set('settings', { ...current, ...settings });
+  }
+
+  getLastSeenVersion(): string | undefined {
+    return this.store.get('lastSeenVersion');
+  }
+
+  setLastSeenVersion(version: string): void {
+    this.store.set('lastSeenVersion', version);
   }
 
   getHistory(): DownloadHistory[] {

@@ -58,6 +58,18 @@ const electronAPI = {
   getVersions: () => ipcRenderer.invoke(IPC_CHANNELS.GET_VERSIONS),
   getActiveTasks: () => ipcRenderer.invoke(IPC_CHANNELS.GET_ACTIVE_TASKS),
   openExternal: (url: string) => ipcRenderer.invoke(IPC_CHANNELS.OPEN_EXTERNAL, url),
+  launchAppUpdater: () => ipcRenderer.invoke(IPC_CHANNELS.LAUNCH_APP_UPDATER),
+
+  checkFileExists: (data: { title: string; ext: string; outputDir?: string }) =>
+    ipcRenderer.invoke(IPC_CHANNELS.CHECK_FILE_EXISTS, data),
+  getAppVersionState: () => ipcRenderer.invoke(IPC_CHANNELS.GET_APP_VERSION_STATE),
+  acknowledgeVersion: (version: string) => ipcRenderer.invoke(IPC_CHANNELS.ACKNOWLEDGE_VERSION, version),
+  checkForAppUpdates: () => ipcRenderer.invoke(IPC_CHANNELS.CHECK_FOR_APP_UPDATES),
+  onAppUpdateAvailable: (callback: (info: { version: string; releaseNotes: string }) => void) => {
+    const listener = (_: any, info: { version: string; releaseNotes: string }) => callback(info);
+    ipcRenderer.on(IPC_CHANNELS.APP_UPDATE_AVAILABLE, listener);
+    return () => ipcRenderer.removeListener(IPC_CHANNELS.APP_UPDATE_AVAILABLE, listener);
+  },
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);

@@ -1,6 +1,6 @@
 {
   "name": "pulltube",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A beautiful, glassmorphic desktop app for downloading video and audio from 1000+ sites using yt-dlp",
   "author": "PullTube",
   "license": "MIT",
@@ -9,7 +9,8 @@
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
     "dev:vite": "vite",
     "dev:electron": "wait-on http://localhost:5173 && tsc -p tsconfig.main.json && electron .",
-    "build": "npm run build:renderer && npm run build:main",
+    "build": "npm run build:updater && npm run build:renderer && npm run build:main",
+    "build:updater": "powershell -Command \"& 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe' /target:winexe /win32icon:build\\icon.ico /out:resources\\bin\\updater.exe /r:System.Windows.Forms.dll /r:System.Drawing.dll scripts\\updater.cs; if (!(Test-Path release)) { New-Item -ItemType Directory -Path release }; Copy-Item resources\\bin\\updater.exe release\\updater.exe -Force\"",
     "build:renderer": "tsc --noEmit && vite build",
     "build:main": "tsc -p tsconfig.main.json",
     "package": "npm run build && electron-builder",
@@ -74,6 +75,12 @@
       "target": [
         {
           "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
           "arch": [
             "x64"
           ]

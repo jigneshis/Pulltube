@@ -9,6 +9,7 @@ import { VideoPreview } from '../components/download/VideoPreview';
 import { FormatSelector } from '../components/download/FormatSelector';
 import { DownloadOptions } from '../components/download/DownloadOptions';
 import { PlaylistChoiceModal } from '../components/download/PlaylistChoiceModal';
+import { FileExistsModal } from '../components/download/FileExistsModal';
 import { PlaylistView } from '../components/download/PlaylistView';
 import { Button } from '../components/ui/Button';
 import { useToast } from '../components/ui/Toast';
@@ -25,6 +26,10 @@ export default function HomePage() {
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [formats, setFormats] = useState<FormatInfo[]>([]);
   const [selectedQuality, setSelectedQuality] = useState<string>('best');
+
+  // File collision state
+  const [fileExistsModalOpen, setFileExistsModalOpen] = useState(false);
+  const [conflictFile, setConflictFile] = useState<{ fileName: string; folderPath?: string } | null>(null);
 
   // Playlist state
   const [playlistInfo, setPlaylistInfo] = useState<PlaylistInfo | null>(null);
@@ -143,7 +148,7 @@ export default function HomePage() {
     await fetchSingleVideo(submitUrl);
   };
 
-  const handleDownload = async () => {
+  const executeDownload = async (flags?: { overwrite?: boolean; renameIfConflict?: boolean }) => {
     if (!videoInfo) return;
     try {
       const chosenQuality = selectedQuality || 'best';
@@ -160,6 +165,8 @@ export default function HomePage() {
         audioFormat: options.mode === 'audio' ? chosenFormat : undefined,
         audioQuality:
           options.mode === 'audio' ? (chosenQuality === '320k' ? '0' : chosenQuality) : undefined,
+        overwrite: flags?.overwrite,
+        renameIfConflict: flags?.renameIfConflict,
       };
 
       await api.startDownload({
@@ -171,7 +178,9 @@ export default function HomePage() {
 
       toast({ type: 'success', title: 'Download started' });
 
-      // Reset form
+      // Reset form and close modal
+      setFileExistsModalOpen(false);
+      setConflictFile(null);
       setVideoInfo(null);
       setUrl('');
 
@@ -180,6 +189,32 @@ export default function HomePage() {
     } catch (err: any) {
       console.error('Download start error:', err);
       toast({ type: 'error', title: 'Failed to start download', message: err.message });
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!videoInfo) return;
+    try {
+      const chosenFormat = options.outputFormat || (options.mode === 'audio' ? 'mp3' : 'mp4');
+      const check = await api.checkFileExists({
+        title: videoInfo.title || 'video',
+        ext: chosenFormat,
+        outputDir: options.outputDir,
+      });
+
+      if (check.exists) {
+        setConflictFile({
+          fileName: check.filename || `${videoInfo.title}.${chosenFormat}`,
+          folderPath: check.path ? check.path.substring(0, Math.max(check.path.lastIndexOf('\\'), check.path.lastIndexOf('/'))) : undefined,
+        });
+        setFileExistsModalOpen(true);
+        return;
+      }
+
+      await executeDownload();
+    } catch (err: any) {
+      console.error('Check file collision error:', err);
+      await executeDownload();
     }
   };
 
@@ -367,6 +402,33 @@ export default function HomePage() {
           </AnimatePresence>
         </>
       )}
+
+      {/* Duplicate File Collision Warning Modal */}
+      <FileExistsModal
+        isOpen={fileExistsModalOpen}
+        fileName={conflictFile?.fileName || 'File'}
+        folderPath={conflictFile?.folderPath}
+        onOverwrite={() => executeDownload({ overwrite: true })}
+        onKeepBoth={() => executeDownload({ renameIfConflict: true })}
+        onCancel={() => {
+          setFileExistsModalOpen(false);
+          setConflictFile(null);
+        }}
+      />
+
+      {/* Playlist Choice Modal */}
+      <PlaylistChoiceModal
+        isOpen={choiceModalOpen}
+        onClose={() => setChoiceModalOpen(false)}
+        onSelectSingle={() => {
+          setChoiceModalOpen(false);
+          fetchSingleVideo(pendingUrl);
+        }}
+        onSelectPlaylist={() => {
+          setChoiceModalOpen(false);
+          fetchPlaylist(pendingUrl);
+        }}
+      />
     </motion.div>
   );
 }

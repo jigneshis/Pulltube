@@ -111,6 +111,8 @@ export interface DownloadOptions {
   audioQuality?: string;
   customArgs: string;
   proxyUrl?: string;
+  overwrite?: boolean;
+  renameIfConflict?: boolean;
 }
 
 /** Possible states of a download task */
@@ -187,6 +189,26 @@ export interface VersionInfo {
   ffmpeg: string;
 }
 
+export interface FileExistsResult {
+  exists: boolean;
+  filename?: string;
+  path?: string;
+}
+
+export interface AppVersionState {
+  currentVersion: string;
+  lastSeenVersion?: string;
+  isPostUpdate: boolean;
+}
+
+export interface AppUpdateCheckResult {
+  hasUpdate: boolean;
+  latestVersion: string;
+  releaseNotes?: string;
+  downloadUrl?: string;
+  error?: string;
+}
+
 // ─── IPC Types ──────────────────────────────────────────────────────────────
 
 /** Type-safe IPC API exposed via preload */
@@ -210,6 +232,12 @@ export interface ElectronAPI {
   getVersions(): Promise<VersionInfo>;
   getActiveTasks(): Promise<DownloadTask[]>;
   openExternal(url: string): Promise<void>;
+  launchAppUpdater(): Promise<boolean>;
+  checkFileExists(data: { title: string; ext: string; outputDir?: string }): Promise<FileExistsResult>;
+  getAppVersionState(): Promise<AppVersionState>;
+  acknowledgeVersion(version: string): Promise<void>;
+  checkForAppUpdates(): Promise<AppUpdateCheckResult>;
+  onAppUpdateAvailable(callback: (info: { version: string; releaseNotes: string }) => void): () => void;
   onDownloadProgress(callback: (task: DownloadTask) => void): () => void;
   onDownloadComplete(callback: (task: DownloadTask) => void): () => void;
   onDownloadError(callback: (data: { id: string; error: string }) => void): () => void;

@@ -7,15 +7,19 @@ import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Toggle } from '../components/ui/Toggle';
 import { Slider } from '../components/ui/Slider';
-import { FolderSearch, Download, Moon, Sun, Settings2, Shield, RefreshCw, Bell, Volume2 } from 'lucide-react';
+import { FolderSearch, Download, Moon, Sun, Settings2, Shield, RefreshCw, Bell, Volume2, ArrowUpCircle } from 'lucide-react';
 import { api } from '../lib/ipc';
 import { BrandLogo } from '../components/ui/BrandLogo';
 import { playCompletionSound } from '../lib/sound';
+import { useToast } from '../components/ui/Toast';
 
 export default function SettingsPage() {
   const settings = useSettingsStore();
   const themeState = useThemeStore();
   const [versions, setVersions] = useState({ app: '', ytdlp: '', ffmpeg: '' });
+
+  const [checkingAppUpdate, setCheckingAppUpdate] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     api.getVersions().then(setVersions).catch(console.error);
@@ -25,8 +29,41 @@ export default function SettingsPage() {
     try {
       const res = await api.updateYtdlp();
       setVersions(prev => ({ ...prev, ytdlp: res.version }));
-    } catch (e) {
+      toast({ type: 'success', title: 'Core updated', message: `yt-dlp is now at ${res.version}` });
+    } catch (e: any) {
       console.error(e);
+      toast({ type: 'error', title: 'Update failed', message: e.message || String(e) });
+    }
+  };
+
+  const handleLaunchAppUpdater = async () => {
+    setCheckingAppUpdate(true);
+    try {
+      if (api?.checkForAppUpdates) {
+        toast({ type: 'info', title: 'Checking for updates...', message: 'Connecting to GitHub releases' });
+        const check = await api.checkForAppUpdates();
+        if (check.hasUpdate) {
+          toast({
+            type: 'success',
+            title: `Update v${check.latestVersion} Available!`,
+            message: 'Launching updater...',
+          });
+          await api.launchAppUpdater();
+        } else {
+          toast({
+            type: 'success',
+            title: 'You are up to date!',
+            message: `PullTube v${versions.app || check.latestVersion} is the latest version.`,
+          });
+        }
+      } else {
+        await api.launchAppUpdater();
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast({ type: 'error', title: 'Update check failed', message: e.message || String(e) });
+    } finally {
+      setCheckingAppUpdate(false);
     }
   };
 
@@ -199,9 +236,19 @@ export default function SettingsPage() {
                 <div className="text-sm text-white/70">yt-dlp: {versions.ytdlp || '...'}</div>
                 <div className="text-sm text-white/70">FFmpeg: {versions.ffmpeg || '...'}</div>
               </div>
-              <Button variant="secondary" icon={RefreshCw} onClick={handleUpdateYtdlp}>
-                Update Core
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="secondary" 
+                  icon={ArrowUpCircle} 
+                  onClick={handleLaunchAppUpdater}
+                  disabled={checkingAppUpdate}
+                >
+                  {checkingAppUpdate ? 'Checking GitHub...' : 'Check for App Update'}
+                </Button>
+                <Button variant="secondary" icon={RefreshCw} onClick={handleUpdateYtdlp}>
+                  Update Core
+                </Button>
+              </div>
             </div>
           </Card>
         </section>
@@ -213,7 +260,7 @@ export default function SettingsPage() {
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 PullTube
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 font-medium">
-                  v{versions.app || '1.0.0'}
+                  v{versions.app || '1.0.1'}
                 </span>
               </h3>
               <p className="text-xs text-white/50 mt-1">

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
 import HomePage from './pages/HomePage';
@@ -8,7 +8,8 @@ import SettingsPage from './pages/SettingsPage';
 import { useDownloadStore } from './stores/useDownloadStore';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useThemeStore } from './stores/useThemeStore';
-import { ToastProvider } from './components/ui/Toast';
+import { ToastProvider, useToast } from './components/ui/Toast';
+import { WhatsNewModal } from './components/ui/WhatsNewModal';
 import { api } from './lib/ipc';
 import { playCompletionSound } from './lib/sound';
 
@@ -32,12 +33,41 @@ function NavigationListener() {
 export default function App() {
   const subscribeToEvents = useDownloadStore(state => state.subscribeToEvents);
   const loadSettings = useSettingsStore(state => state.loadSettings);
+  const setAvailableUpdate = useSettingsStore(state => state.setAvailableUpdate);
   const theme = useThemeStore(state => state.theme);
+
+  const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  const [appVersion, setAppVersion] = useState('1.0.1');
 
   useEffect(() => {
     subscribeToEvents();
     loadSettings();
+
+    // Check version state on launch
+    const checkVersion = async () => {
+      try {
+        if (api?.getAppVersionState) {
+          const state = await api.getAppVersionState();
+          setAppVersion(state.currentVersion);
+          if (state.isPostUpdate) {
+            setWhatsNewOpen(true);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not retrieve app version state:', err);
+      }
+    };
+    checkVersion();
   }, [subscribeToEvents, loadSettings]);
+
+  useEffect(() => {
+    if (api?.onAppUpdateAvailable) {
+      const unsubscribe = api.onAppUpdateAvailable((info) => {
+        setAvailableUpdate(info);
+      });
+      return unsubscribe;
+    }
+  }, [setAvailableUpdate]);
 
   useEffect(() => {
     if (api?.onQueueComplete) {
@@ -61,6 +91,15 @@ export default function App() {
     }
   }, [theme]);
 
+  const handleAcknowledgeVersion = async () => {
+    try {
+      if (api?.acknowledgeVersion) {
+        await api.acknowledgeVersion(appVersion);
+      }
+    } catch {}
+    setWhatsNewOpen(false);
+  };
+
   return (
     <ToastProvider>
       <HashRouter>
@@ -74,6 +113,13 @@ export default function App() {
           </Route>
         </Routes>
       </HashRouter>
+
+      {/* Post-Update "What's New" Welcome Modal */}
+      <WhatsNewModal
+        isOpen={whatsNewOpen}
+        version={appVersion}
+        onClose={handleAcknowledgeVersion}
+      />
     </ToastProvider>
   );
 }

@@ -4,6 +4,8 @@ import { api } from '../lib/ipc';
 
 interface SettingsState extends AppSettings {
   isLoaded: boolean;
+  availableUpdate: { version: string; releaseNotes: string } | null;
+  setAvailableUpdate: (update: { version: string; releaseNotes: string } | null) => void;
   loadSettings: () => Promise<void>;
   updateSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => Promise<void>;
   selectDownloadDir: () => Promise<void>;
@@ -30,6 +32,8 @@ const defaultSettings: AppSettings = {
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   ...defaultSettings,
   isLoaded: false,
+  availableUpdate: null,
+  setAvailableUpdate: (update) => set({ availableUpdate: update }),
   
   loadSettings: async () => {
     try {
