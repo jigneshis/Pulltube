@@ -147,7 +147,7 @@ export const FILENAME_TOKENS = [
 // ─── App Constants ──────────────────────────────────────────────────────────
 
 export const APP_NAME = 'PullTube';
-export const APP_VERSION = '1.0.1';
+export const APP_VERSION = '1.1.2';
 export const YTDLP_RELEASES_URL = 'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest';
 export const YTDLP_BINARY_NAME = 'yt-dlp.exe';
 export const FFMPEG_BINARY_NAME = 'ffmpeg.exe';

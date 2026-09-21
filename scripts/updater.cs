@@ -283,7 +283,7 @@ namespace PullTubeUpdater
                 }
             }
 
-            return "1.0.1";
+            return "1.1.2";
         }
 
         private bool IsNewerVersion(string latest, string current)

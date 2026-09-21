@@ -37,7 +37,7 @@ export default function App() {
   const theme = useThemeStore(state => state.theme);
 
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
-  const [appVersion, setAppVersion] = useState('1.0.1');
+  const [appVersion, setAppVersion] = useState('1.1.2');
 
   useEffect(() => {
     subscribeToEvents();

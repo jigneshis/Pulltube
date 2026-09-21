@@ -295,7 +295,7 @@ export default function SettingsPage() {
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 PullTube
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 font-medium">
-                  v{versions.app || '1.0.1'}
+                  v{versions.app || '1.1.2'}
                 </span>
               </h3>
               <p className="text-xs text-white/50 mt-1">
