@@ -289,9 +289,10 @@ export class YtDlpWrapper {
     args.push('--newline');
     args.push('--no-warnings');
     args.push('--js-runtimes', 'node');
-    args.push('--retries', '10');
-    args.push('--fragment-retries', '10');
-    args.push('--concurrent-fragments', '4');
+    args.push('--retries', '25');
+    args.push('--fragment-retries', '25');
+    args.push('--file-access-retries', '10');
+    args.push('--throttled-rate', '100K');
     
     // Output directory fallback
     const targetDir = options.outputDir || (app?.getPath ? app.getPath('downloads') : '');

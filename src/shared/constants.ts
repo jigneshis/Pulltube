@@ -129,6 +129,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   'CERTIFICATE_VERIFY_FAILED': 'SSL certificate error. Try disabling your proxy or VPN.',
   'Login required': 'This content requires login. Authentication is not currently supported.',
   'Geo-restricted': 'This content is not available in your region. Try using a VPN or proxy.',
+  'bytes read': 'The video stream connection was dropped by the server. Please try downloading again.',
+  'Giving up after': 'Download timed out after multiple retries. The server dropped the stream connection.',
 };
 
 // ─── Filename Template Tokens ───────────────────────────────────────────────
